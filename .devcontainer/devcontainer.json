@@ -1,0 +1,58 @@
+{
+    "name": "Proxmox-home-lab Dev Container",
+    "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+    "features": {
+        "ghcr.io/dhoeric/features/act:1": {},
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+        "ghcr.io/devcontainers/features/github-cli:1": {},
+        "ghcr.io/devcontainers/features/terraform:1": {},
+        "ghcr.io/devcontainers-extra/features/wireguard-apt-get:1": {},
+        "ghcr.io/devcontainers/features/python:1": {},
+        "ghcr.io/devcontainers-extra/features/vault-asdf:2": {}
+    },
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "editor.defaultFormatter": "esbenp.prettier-vscode",
+                "[terraform]": {
+                    "editor.defaultFormatter": "hashicorp.terraform"
+                },
+                "[terraform-vars]": {
+                    "editor.defaultFormatter": "hashicorp.terraform"
+                },
+                "[yaml]": {
+                    "editor.defaultFormatter": "redhat.vscode-yaml",
+                    "editor.tabSize": 2
+                },
+                "[json]": {
+                    "prettier.tabWidth": 4
+                },
+                "[jsonc]": {
+                    "prettier.tabWidth": 4
+                },
+                "[jsonl]": {
+                    "editor.tabSize": 4
+                },
+                "emeraldwalk.runonsave": {
+                    "commands": [
+                        {
+                            "match": "\\.hcl$",
+                            "cmd": "terragrunt hclfmt --terragrunt-hclfmt-file ${file}"
+                        }
+                    ]
+                }
+            },
+            "extensions": [
+                "github.copilot",
+                "github.copilot-chat",
+                "esbenp.prettier-vscode",
+                "bierner.github-markdown-preview",
+                "github.vscode-github-actions",
+                "hashicorp.terraform",
+                "redhat.vscode-yaml",
+                "hashicorp.hcl",
+                "emeraldwalk.runonsave"
+            ]
+        }
+    }
+}
