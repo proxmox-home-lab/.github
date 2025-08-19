@@ -18,4 +18,4 @@ permissions:
 
 jobs:
   terragrunt:
-    uses: proxmox-home-lab/github-actions/workflow-templates/tpl-terragrunt.yaml@main
+    uses: proxmox-home-lab/github-actions/.github/workflowstpl-terragrunt.yaml@main
