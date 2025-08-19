@@ -27,11 +27,36 @@ jobs:
           vault_version: 1.20.2
 
       - name: Run terragrunt plan
-        run: |
-          . ./vault-helper.sh
-          terragrunt run --all plan --non-interactive --log-level error --working-dir ./iac
+        id: terragrunt_plan
         env:
           VAULT_ADDR: ${{ secrets.VAULT_ADDR }}
           VAULT_AGENT_CONFIG: ${{ vars.VAULT_AGENT_CONFIG }}
           VAULT_CLIENT_ID: ${{ secrets.VAULT_CLIENT_ID }}
           VAULT_SECRET_ID: ${{ secrets.VAULT_SECRET_ID }}
+        run: |
+          . ./vault-helper.sh
+          terragrunt run --all plan --non-interactive --log-level error --working-dir ./iac
+
+      - name: Get terragrunt step id
+        id: terragrunt_step_id
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          step_url=$(gh run --repo ${{ github.repository }} view ${{ github.run_id }} --json jobs --jq '.jobs[] | select(.name == "${{ github.job }}") | .url, (.steps[] | select(.name == "Run terragrunt plan") | "#step:\(.number):1")' | tr -d "\n")
+          echo "step-url=${step_url}" >> $GITHUB_OUTPUT
+
+      - name: Find PR Comment
+        id: find_comment
+        uses: peter-evans/find-comment@v4
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body-includes: "<!-- Terragrunt PR Comment -->"
+
+      - name: PR Comment
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          comment-id: ${{ steps.find_comment.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            <!-- Terragrunt PR Comment -->
+            Step URL: ${{ steps.terragrunt_step_id.outputs.step_url }}
