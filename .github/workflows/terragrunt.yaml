@@ -1,0 +1,21 @@
+name: Terragrunt Workflow
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "iac/**"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "iac/**"
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  terragrunt:
+    uses: proxmox-home-lab/.github/.github/workflows/tpl-terragrunt.yaml@main
