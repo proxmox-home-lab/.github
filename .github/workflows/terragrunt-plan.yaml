@@ -60,6 +60,7 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           body: |
             <!-- Terragrunt PR Comment -->
+            ## Terragrunt Plan
             Step URL: ${{ steps.terragrunt_step_id.outputs.step_url }}
 
       - name: Terragrunt Apply
