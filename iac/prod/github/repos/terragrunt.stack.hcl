@@ -4,7 +4,7 @@ unit "packer-ubuntu" {
   path   = "packer-ubuntu"
   values = {
     name        = "packer-ubuntu"
-    description = "Packer Ubuntu Template"
+    description = "Packer Ubuntu Templates"
   }
 }
 
