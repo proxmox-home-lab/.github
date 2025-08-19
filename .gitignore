@@ -3,3 +3,5 @@ terraform.tfstate*
 .terraform.lock.hcl
 .terragrunt-cache
 .terragrunt-stack
+.test
+.vault_config

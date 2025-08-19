@@ -1,0 +1,204 @@
+name: Terragrunt Preview
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+
+permissions:
+  contents: read
+  pull-requests: write
+  id-token: write
+
+env:
+  TF_INPUT: "false"
+  TF_IN_AUTOMATION: "true"
+  TF_PLUGIN_CACHE_DIR: ~/.terraform.d/plugin-cache
+  TG_LOG_LEVEL: "error" # nueva CLI
+  TG_NON_INTERACTIVE: "true" # nueva CLI
+
+jobs:
+  preview:
+    name: run --all plan (cambiado + dependencias)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Sticky PR (placeholder)
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          header: terragrunt-preview
+          message: |
+            ## Terragrunt Preview — `${{ github.event.pull_request.head.sha }}`
+            ⏳ Generando preview… (se actualizará solo)
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.5
+
+      - name: Install Terragrunt (new CLI)
+        run: |
+          TG_VERSION="0.83.2"
+          curl -sSL -o /usr/local/bin/terragrunt "https://github.com/gruntwork-io/terragrunt/releases/download/v${TG_VERSION}/terragrunt_linux_amd64"
+          chmod +x /usr/local/bin/terragrunt
+          terragrunt --version
+
+      - name: Cache TF plugins
+        uses: actions/cache@v4
+        with:
+          path: ~/.terraform.d/plugin-cache
+          key: tf-plugins-${{ runner.os }}-${{ hashFiles('**/.terraform.lock.hcl') }}
+          restore-keys: |
+            tf-plugins-${{ runner.os }}-
+
+      - name: Cache Terragrunt download dir
+        uses: actions/cache@v4
+        with:
+          path: ~/.terragrunt-cache
+          key: tg-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            tg-cache-${{ runner.os }}-
+
+      - name: HCL fmt & validate (new CLI)
+        run: |
+          terragrunt hcl fmt --check
+          terragrunt hcl validate
+        # Docs: hcl fmt/validate en la nueva CLI.  [oai_citation:1‡terragrunt.gruntwork.io](https://terragrunt.gruntwork.io/docs/reference/cli-options/?utm_source=chatgpt.com)
+
+      # 🔐 Añade auth cloud si aplica (AWS/GCP/Azure/Vault)
+
+      - name: Descubrir unidades y flags de include
+        id: discover
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y >/dev/null 2>&1 || true
+          sudo apt-get install -y jq >/dev/null 2>&1 || true
+
+          BASE="${{ github.event.pull_request.base.sha }}"
+          HEAD="${{ github.event.pull_request.head.sha }}"
+
+          # Cambios relevantes (tf/hcl)
+          mapfile -t CHANGED < <(git diff --name-only "$BASE" "$HEAD" | grep -E '\.(tf|hcl)$' || true)
+
+          if [ "${#CHANGED[@]}" -eq 0 ]; then
+            echo "include_flags=" >> "$GITHUB_OUTPUT"
+            echo "changed_units_count=0" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Lista de unidades (nueva CLI)
+          LIST_JSON="$(terragrunt list --format=json)"  #  [oai_citation:2‡terragrunt-v1.gruntwork.io](https://terragrunt-v1.gruntwork.io/docs/reference/cli/commands/list/?utm_source=chatgpt.com)
+          mapfile -t UNITS < <(echo "$LIST_JSON" | jq -r '.[] | select(.type=="unit") | .path')
+
+          declare -A SELECTED=()
+          for f in "${CHANGED[@]}"; do
+            for u in "${UNITS[@]}"; do
+              case "$f" in
+                "$u"/*|"$u") SELECTED["$u"]=1 ;;
+              esac
+            done
+          done
+
+          FLAGS=""
+          COUNT=0
+          for u in "${!SELECTED[@]}"; do
+            FLAGS+=" --queue-include-dir '$u'"
+            COUNT=$((COUNT+1))
+          done
+
+          # Exportar flags (pueden ser vacíos; Terragrunt ejecutará cero unidades)
+          echo "include_flags=${FLAGS}" >> "$GITHUB_OUTPUT"
+          echo "changed_units_count=${COUNT}" >> "$GITHUB_OUTPUT"
+
+      - name: run --all plan (respeta dependencias con Run Queue)
+        id: plan
+        shell: bash
+        # No fallar aquí para poder publicar comentario y artefactos
+        continue-on-error: true
+        env:
+          INCLUDE_FLAGS: ${{ steps.discover.outputs.include_flags }}
+        run: |
+          set -euo pipefail
+          mkdir -p tg-logs
+          # Log JSON para parseo + log "pretty" para lectura humana
+          terragrunt run --all plan \
+            ${INCLUDE_FLAGS} \
+            --queue-include-external \
+            --non-interactive \
+            --log-level "${TG_LOG_LEVEL}" \
+            --log-format json \
+            > tg-logs/terragrunt.jsonl 2>&1 || true
+          # Repetimos con formato legible para el comentario (no todo el JSON)
+          terragrunt run --all plan \
+            ${INCLUDE_FLAGS} \
+            --queue-include-external \
+            --non-interactive \
+            --log-level "${TG_LOG_LEVEL}" \
+            --log-format pretty \
+            -- \
+            -no-color -lock=false \
+            | tee tg-logs/terragrunt-pretty.log || true
+
+          # Salida compacta para el comentario (máx ~60KB)
+          head -c 60000 tg-logs/terragrunt-pretty.log > pr-snippet.log
+
+          # Determinar estado global: si hubo errores, creamos marcador
+          if grep -qE "\[ERROR\]|Error:" tg-logs/terragrunt-pretty.log; then
+            touch .plan_failed
+          fi
+        # Run Queue y flags de logging/formato en la nueva CLI.  [oai_citation:3‡terragrunt.gruntwork.io](https://terragrunt.gruntwork.io/docs/features/run-queue/?utm_source=chatgpt.com)
+
+      - name: Construir comentario
+        shell: bash
+        run: |
+          SHA="${{ github.event.pull_request.head.sha }}"
+          COUNT="${{ steps.discover.outputs.changed_units_count }}"
+          {
+            echo "<!-- terragrunt-preview -->"
+            echo "## Terragrunt Preview — \`${SHA}\`"
+            if [ -z "${COUNT}" ] || [ "${COUNT}" -eq 0 ]; then
+              echo
+              echo "**No hay cambios en \`.tf\`/\`.hcl\` mapeados a unidades** → no se generan planes."
+            else
+              echo
+              echo "- Unidades tocadas: **${COUNT}** (más dependencias incluidas automáticamente por el DAG)"
+              echo
+              echo "#### Salida (truncada)"
+              echo
+              echo '```text'
+              cat pr-snippet.log
+              echo '```'
+              echo
+              echo "<sub>Logs completos adjuntos como artefacto.</sub>"
+            fi
+          } > pr-comment.md
+
+      - name: Subir logs como artefacto
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: terragrunt-logs
+          path: tg-logs/
+
+      - name: Publicar/actualizar comentario
+        if: always()
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          header: terragrunt-preview
+          path: pr-comment.md
+
+      - name: Fallar si hubo errores en plan
+        if: always()
+        run: |
+          if [ -f .plan_failed ]; then
+            echo "Terragrunt plan tuvo errores en una o más unidades." >&2
+            exit 1
+          fi
