@@ -43,7 +43,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           step_url=$(gh run --repo ${{ github.repository }} view ${{ github.run_id }} --json jobs --jq '.jobs[] | select(.name == "${{ github.job }}") | .url, (.steps[] | select(.name == "Run terragrunt plan") | "#step:\(.number):1")' | tr -d "\n")
-          echo "step-url=${step_url}" >> $GITHUB_OUTPUT
+          echo "step_url=${step_url}" >> $GITHUB_OUTPUT
 
       - name: Find PR Comment
         id: find_comment
