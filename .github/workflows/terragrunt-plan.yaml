@@ -31,9 +31,9 @@ jobs:
           . ./vault-helper.sh
         env:
           VAULT_ADDR: ${{ secrets.VAULT_ADDR }}
-          VAULT_CLIENT_CONFIG: ${{ vars.VAULT_CLIENT_CONFIG }}
+          VAULT_AGENT_CONFIG: ${{ vars.VAULT_AGENT_CONFIG }}
           VAULT_CLIENT_ID: ${{ secrets.VAULT_CLIENT_ID }}
-          VAULT_CLIENT_SECRET: ${{ secrets.VAULT_CLIENT_SECRET }}
+          VAULT_SECRET_ID: ${{ secrets.VAULT_SECRET_ID }}
 
       - name: Run terragrunt plan
         working-directory: ./iac
