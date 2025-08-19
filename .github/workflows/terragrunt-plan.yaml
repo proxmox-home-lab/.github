@@ -1,12 +1,20 @@
-name: Terragrunt Preview
+name: Terragrunt Workflow
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - "iac/**"
   pull_request:
+    branches:
+      - main
+    paths:
+      - "iac/**"
 
 permissions:
   contents: read
   pull-requests: write
-  id-token: write
 
 jobs:
   plan:
@@ -53,3 +61,9 @@ jobs:
           body: |
             <!-- Terragrunt PR Comment -->
             Step URL: ${{ steps.terragrunt_step_id.outputs.step_url }}
+
+      - name: Terragrunt Apply
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          . ./vault-helper.sh
+          terragrunt run --all apply --non-interactive --log-level error --working-dir ./iac
