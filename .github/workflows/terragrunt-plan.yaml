@@ -21,6 +21,11 @@ jobs:
           tg_version: v0.85.0
           tofu_version: v1.10.5
 
+      - name: Install Vault
+        uses: eLco/setup-vault@v1
+        with:
+          vault_version: 1.20.2
+
       - name: Setup environment
         run: |
           . ./vault-helper.sh
