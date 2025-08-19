@@ -3,16 +3,16 @@ locals {
 }
 
 unit "github-actions" {
-  source = "github.com/proxmox-home-lab/infrastructure-catalog.git//modules/github-repository?ref=${local.version}"
+  source = "github.com/proxmox-home-lab/infrastructure-catalog.git//units/github-repository?ref=${local.version}"
   path   = "github-actions"
   values = {
     name        = "github-actions"
-    description = "Repository to store GitHub Actions & workflowsss"
+    description = "Repository to store GitHub Actions & workflows"
   }
 }
 
 unit "infrastructure-catalog" {
-  source = "github.com/proxmox-home-lab/infrastructure-catalog.git//modules/github-repository?ref=${local.version}"
+  source = "github.com/proxmox-home-lab/infrastructure-catalog.git//units/github-repository?ref=${local.version}"
   path   = "infrastructure-catalog"
   values = {
     name        = "infrastructure-catalog"
@@ -21,7 +21,7 @@ unit "infrastructure-catalog" {
 }
 
 unit "packer-ubuntu" {
-  source = "github.com/proxmox-home-lab/infrastructure-catalog.git//modules/github-repository?ref=${local.version}"
+  source = "github.com/proxmox-home-lab/infrastructure-catalog.git//units/github-repository?ref=${local.version}"
   path   = "packer-ubuntu"
   values = {
     name        = "packer-ubuntu"
@@ -30,7 +30,7 @@ unit "packer-ubuntu" {
 }
 
 unit "packer-opnsense" {
-  source = "github.com/proxmox-home-lab/infrastructure-catalog.git//modules/github-repository?ref=${local.version}"
+  source = "github.com/proxmox-home-lab/infrastructure-catalog.git//units/github-repository?ref=${local.version}"
   path   = "packer-opnsense"
   values = {
     name        = "packer-opnsense"
