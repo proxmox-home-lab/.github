@@ -1,5 +1,9 @@
+locals {
+  version = "main"
+}
+
 unit "github-actions" {
-  source = "${get_repo_root()}/infrastructure-catalog/units/github-repository"
+  source = "github.com/proxmox-home-lab/infrastructure-catalog.git//modules/github-repository?ref=${local.version}"
   path   = "github-actions"
   values = {
     name        = "github-actions"
@@ -8,7 +12,7 @@ unit "github-actions" {
 }
 
 unit "infrastructure-catalog" {
-  source = "${get_repo_root()}/infrastructure-catalog/units/github-repository"
+  source = "github.com/proxmox-home-lab/infrastructure-catalog.git//modules/github-repository?ref=${local.version}"
   path   = "infrastructure-catalog"
   values = {
     name        = "infrastructure-catalog"
@@ -17,8 +21,7 @@ unit "infrastructure-catalog" {
 }
 
 unit "packer-ubuntu" {
-  # source = "github.com/proxmox-home-lab/terraform-module-github-repository?ref=${local.version}"
-  source = "${get_repo_root()}/infrastructure-catalog/units/github-repository"
+  source = "github.com/proxmox-home-lab/infrastructure-catalog.git//modules/github-repository?ref=${local.version}"
   path   = "packer-ubuntu"
   values = {
     name        = "packer-ubuntu"
@@ -27,8 +30,7 @@ unit "packer-ubuntu" {
 }
 
 unit "packer-opnsense" {
-  # source = "github.com/proxmox-home-lab/terraform-module-github-repository?ref=${local.version}"
-  source = "${get_repo_root()}/infrastructure-catalog/units/github-repository"
+  source = "github.com/proxmox-home-lab/terraform-module-github-repository?ref=${local.version}"
   path   = "packer-opnsense"
   values = {
     name        = "packer-opnsense"
