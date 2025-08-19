@@ -30,7 +30,7 @@ unit "packer-ubuntu" {
 }
 
 unit "packer-opnsense" {
-  source = "github.com/proxmox-home-lab/terraform-module-github-repository?ref=${local.version}"
+  source = "github.com/proxmox-home-lab/infrastructure-catalog.git//modules/github-repository?ref=${local.version}"
   path   = "packer-opnsense"
   values = {
     name        = "packer-opnsense"
