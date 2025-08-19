@@ -26,18 +26,12 @@ jobs:
         with:
           vault_version: 1.20.2
 
-      - name: Setup environment
+      - name: Run terragrunt plan
         run: |
           . ./vault-helper.sh
-          env | sort
+          terragrunt run --all plan --non-interactive --log-level error --working-dir ./iac
         env:
           VAULT_ADDR: ${{ secrets.VAULT_ADDR }}
           VAULT_AGENT_CONFIG: ${{ vars.VAULT_AGENT_CONFIG }}
           VAULT_CLIENT_ID: ${{ secrets.VAULT_CLIENT_ID }}
           VAULT_SECRET_ID: ${{ secrets.VAULT_SECRET_ID }}
-
-      - name: Run terragrunt plan
-        working-directory: ./iac
-        run: |
-          env | sort
-          terragrunt run --all plan
