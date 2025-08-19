@@ -47,7 +47,7 @@ jobs:
 
       - name: Find PR Comment
         id: find_comment
-        uses: peter-evans/create-or-update-comment@v4
+        uses: peter-evans/find-comment@v3
         with:
           issue-number: ${{ github.event.pull_request.number }}
           body-includes: "<!-- Terragrunt PR Comment -->"
