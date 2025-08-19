@@ -19,3 +19,4 @@ permissions:
 jobs:
   terragrunt:
     uses: proxmox-home-lab/github-actions/.github/workflows/tpl-terragrunt.yaml@main
+    secrets: inherit
