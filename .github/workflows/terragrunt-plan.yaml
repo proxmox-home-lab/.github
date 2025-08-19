@@ -29,6 +29,7 @@ jobs:
       - name: Setup environment
         run: |
           . ./vault-helper.sh
+          env | sort
         env:
           VAULT_ADDR: ${{ secrets.VAULT_ADDR }}
           VAULT_AGENT_CONFIG: ${{ vars.VAULT_AGENT_CONFIG }}
@@ -37,4 +38,6 @@ jobs:
 
       - name: Run terragrunt plan
         working-directory: ./iac
-        run: terragrunt run --all plan
+        run: |
+          env | sort
+          terragrunt run --all plan
