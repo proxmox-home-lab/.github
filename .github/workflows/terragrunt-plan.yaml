@@ -19,6 +19,7 @@ jobs:
         uses: gruntwork-io/terragrunt-action@v3
         with:
           tg_version: v0.85.0
+          tofu_version: v1.10.5
 
       - name: Setup environment
         run: |
