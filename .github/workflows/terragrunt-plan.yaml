@@ -54,6 +54,7 @@ jobs:
           echo "step_url=${step_url}" >> $GITHUB_OUTPUT
 
       - name: PR Comment
+        if: github.event_name == 'pull_request'
         uses: peter-evans/create-or-update-comment@v4
         with:
           comment-id: ${{ steps.find_comment.outputs.comment-id }}
