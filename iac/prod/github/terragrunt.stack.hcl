@@ -36,7 +36,7 @@ unit "teams-apply-approvers" {
     name        = "apply-approvers"
     description = "GitHub Org Teams for Apply Approvers"
     members = {
-      sergio = "maintainer"
+      sergioaten = "maintainer"
     }
   }
 }
