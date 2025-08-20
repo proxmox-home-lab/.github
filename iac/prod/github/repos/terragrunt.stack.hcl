@@ -20,20 +20,11 @@ unit "infrastructure-catalog" {
   }
 }
 
-unit "packer-ubuntu" {
+unit "packer-images" {
   source = "github.com/proxmox-home-lab/infrastructure-catalog.git//units/github-repository?ref=${local.version}"
-  path   = "packer-ubuntu"
+  path   = "packer-images"
   values = {
-    name        = "packer-ubuntu"
+    name        = "packer-images"
     description = "Packer Ubuntu Templates"
-  }
-}
-
-unit "packer-opnsense" {
-  source = "github.com/proxmox-home-lab/infrastructure-catalog.git//units/github-repository?ref=${local.version}"
-  path   = "packer-opnsense"
-  values = {
-    name        = "packer-opnsense"
-    description = "Packer OPNSense Template"
   }
 }
