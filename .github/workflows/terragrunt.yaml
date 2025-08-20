@@ -11,6 +11,16 @@ on:
       - "iac/**"
 
 jobs:
-  terragrunt:
+  plan:
+    if: ${{ github.event_name == 'pull_request' }}
     uses: proxmox-home-lab/github-actions/.github/workflows/tpl-terragrunt.yaml@main
     secrets: inherit
+    with:
+      action: plan
+
+  apply:
+    if: ${{ github.event_name == 'issue_comment' }}
+    uses: proxmox-home-lab/github-actions/.github/workflows/tpl-terragrunt.yaml@main
+    secrets: inherit
+    with:
+      action: apply
