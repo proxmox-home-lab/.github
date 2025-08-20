@@ -13,7 +13,7 @@ remote_state {
     if_exists = "overwrite"
   }
   config = {
-    schema_name = "${path_relative_to_include()}/tfstate"
+    schema_name = "${basename(get_repo_root())}/${replace(path_relative_to_include(), ".terragrunt-stack/", "")}"
   }
 }
 
