@@ -7,7 +7,7 @@ unit "github-actions" {
   path   = "github-actions"
   values = {
     name        = "github-actions"
-    description = "Repository to store GitHub Actions & workflowss"
+    description = "Repository to store GitHub Actions & workflows"
   }
 }
 
@@ -20,11 +20,31 @@ unit "infrastructure-catalog" {
   }
 }
 
+unit "packer-ubuntu" {
+  source = "github.com/proxmox-home-lab/infrastructure-catalog.git//units/github-repository?ref=${local.version}"
+  path   = "packer-ubuntu"
+  values = {
+    enabled     = false
+    name        = "packer-ubuntu"
+    description = "Packer Ubuntu Templates"
+  }
+}
+
+unit "packer-opnsense" {
+  source = "github.com/proxmox-home-lab/infrastructure-catalog.git//units/github-repository?ref=${local.version}"
+  path   = "packer-opnsense"
+  values = {
+    enabled     = false
+    name        = "packer-opnsense"
+    description = "Packer OPNSense Template"
+  }
+}
+
 unit "packer-images" {
   source = "github.com/proxmox-home-lab/infrastructure-catalog.git//units/github-repository?ref=${local.version}"
   path   = "packer-images"
   values = {
     name        = "packer-images"
-    description = "Packer Ubuntu Templates"
+    description = "Packer OPNSense Template"
   }
 }

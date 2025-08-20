@@ -1,20 +1,14 @@
 name: Terragrunt Workflow
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "iac/**"
+  issue_comment:
+    types:
+      - created
   pull_request:
     branches:
       - main
     paths:
       - "iac/**"
-
-permissions:
-  contents: read
-  pull-requests: write
 
 jobs:
   terragrunt:
