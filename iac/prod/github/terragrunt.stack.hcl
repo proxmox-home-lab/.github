@@ -28,3 +28,15 @@ unit "repo-packer-images" {
     description = "Packer OPNSense Template"
   }
 }
+
+unit "teams-apply-approvers" {
+  source = "github.com/proxmox-home-lab/infrastructure-catalog.git//units/github/teams?ref=${local.version}"
+  path   = "teams-apply-approvers"
+  values = {
+    name        = "apply-approvers"
+    description = "GitHub Org Teams for Apply Approvers"
+    members = {
+      sergio = "maintainer"
+    }
+  }
+}
