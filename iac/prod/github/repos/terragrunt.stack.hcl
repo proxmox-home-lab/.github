@@ -48,3 +48,8 @@ unit "packer-images" {
     description = "Packer OPNSense Template"
   }
 }
+
+unit "test" {
+  source = "github.com/proxmox-home-lab/infrastructure-catalog.git//units/github-repository?ref=${local.version}"
+  path   = "test"
+}
