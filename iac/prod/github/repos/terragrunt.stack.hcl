@@ -7,7 +7,7 @@ unit "github-actions" {
   path   = "github-actions"
   values = {
     name        = "github-actions"
-    description = "Repository to store GitHub Actions & workflows"
+    description = "Repository to store GitHub Actions & workflowsss"
   }
 }
 
