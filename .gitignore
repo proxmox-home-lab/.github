@@ -1,0 +1,7 @@
+terraform.tfstate*
+.terraform
+.terraform.lock.hcl
+.terragrunt-cache
+.terragrunt-stack
+.test
+.vault_config
