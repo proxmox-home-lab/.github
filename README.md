@@ -4,7 +4,7 @@
   <img src="https://avatars.githubusercontent.com/sergioaten" width="96" alt="sergioaten avatar" />
 </a>This project aimed to create a scalable and secure home lab environment using Proxmox and various open-source tools. The goal is to automate the deployment and management of infrastructure components while ensuring best practices for security and maintainability.
 
-My background is primarily in cloud infrastructure management (specialized in Azure). Due to a career transition, I need to reinvent myself and return to lower-level infrastructure management. (In cloud environments, everything is very abstract and magical). This project serves as a learning platform to deepen my understanding of infrastructure management in a more controlled and customizable environment.
+<br>My background is primarily in cloud infrastructure management (specialized in Azure). Due to a career transition, I need to reinvent myself and return to lower-level infrastructure management. (In cloud environments, everything is very abstract and magical). This project serves as a learning platform to deepen my understanding of infrastructure management in a more controlled and customizable environment.
 
 ## Repository Structure
 
