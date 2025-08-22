@@ -32,7 +32,7 @@ template {
   perms       = "0600"
   contents    = <<EOF
     # Github Provider
-    {{ with secret "kv/data/proxmox-home-lab/terraform/github-provider" }}{{ range $k, $v := .Data.data }}
+    {{ with secret "kv/data/proxmox-home-lab/terraform/provider-github" }}{{ range $k, $v := .Data.data }}
     export {{ $k }}="{{ $v }}"{{ end }}{{ end }}
   EOF
 }
