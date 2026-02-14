@@ -54,7 +54,8 @@
                 "hashicorp.terraform",
                 "redhat.vscode-yaml",
                 "hashicorp.hcl",
-                "emeraldwalk.runonsave"
+                "emeraldwalk.runonsave",
+                "openai.chatgpt"
             ]
         }
     }
