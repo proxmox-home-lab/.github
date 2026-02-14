@@ -1,6 +1,6 @@
 locals {
   version = "main"
-  topics  = ["iac", "githubss"]
+  topics  = ["iac", "githubs"]
   base_repos_topics = concat(
     local.topics,
     ["base"]
