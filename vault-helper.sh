@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Orchestrates: (re)use of token -> token_file -> vault agent (external HCL) -> load .env(s) -> clean .env/.sh
+# Orchestrates: (re)use token -> token_file -> vault agent (external HCL) -> load .env(s) -> clean .env/.sh
 # Requirements: vault, jq
 # Usage: source vault-helper.sh
 
@@ -12,12 +12,46 @@ fi
 # Clean inherited traps that may cause 'unbound variable' with strict shells
 trap - RETURN 2>/dev/null || true
 
+# ---------- GitHub Actions detection ----------
+is_github_actions() {
+  [[ "${GITHUB_ACTIONS:-}" == "true" ]]
+}
+
 # ---------- Mask utils (for GitHub Actions) ----------
 gh_mask() {
   local val="${1-}"
-  if [[ -n "$val" && "${GITHUB_ACTIONS:-}" == "true" ]]; then
+  if [[ -n "$val" ]] && is_github_actions; then
     printf '::add-mask::%s\n' "$val"
   fi
+}
+
+# ---------- Persist env to next steps (GitHub Actions) ----------
+# Uses heredoc format to safely handle special characters/newlines.
+gh_env_set() {
+  local key="${1-}"
+  local val="${2-}"
+
+  # Only if running in GitHub Actions and $GITHUB_ENV is available
+  if ! is_github_actions; then
+    return 0
+  fi
+  if [[ -z "${GITHUB_ENV:-}" ]]; then
+    return 0
+  fi
+  [[ -z "$key" ]] && return 0
+
+  # Ensure KEY is valid
+  if [[ ! "$key" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]]; then
+    return 0
+  fi
+
+  # Multi-line safe write
+  {
+    echo "${key}<<__VAULT_ENV_EOF__"
+    echo -n "${val}"
+    echo
+    echo "__VAULT_ENV_EOF__"
+  } >> "$GITHUB_ENV"
 }
 
 vault_env_main() {
@@ -53,6 +87,8 @@ vault_env_main() {
   # Optional TLS
   if [[ -n "${VAULT_CACERT-}" && -f "${VAULT_CACERT}" ]]; then
     export VAULT_CACERT
+    # Persist for next steps as well
+    gh_env_set "VAULT_CACERT" "${VAULT_CACERT}"
   fi
 
   # ---------- Reachability ----------
@@ -97,10 +133,15 @@ vault_env_main() {
     gh_mask "${token_to_use}"
   fi
 
+  # Persist VAULT_TOKEN for next steps (still masked)
+  if [[ -n "${VAULT_TOKEN:-}" ]]; then
+    gh_env_set "VAULT_TOKEN" "${VAULT_TOKEN}"
+  fi
+
   # ---------- Run vault agent ----------
   log "🚀 Running vault agent with config: ${AGENT_CFG}"
   if ! vault agent -log-level=info -config "${AGENT_CFG}" >"${AGENT_LOG}" 2>&1; then
-    # No volcamos el log para evitar posibles datos sensibles
+    # Do not dump agent log to avoid sensitive data
     die "vault agent failed (review HCL, token_file path and template destinations). See ${AGENT_LOG}"
     return 1
   fi
@@ -117,7 +158,7 @@ vault_env_main() {
     return 1
   fi
 
-  # ---------- Safe loader (parse, export, mask) ----------
+  # ---------- Safe loader (parse, export, mask, persist) ----------
   is_valid_key() {
     [[ "$1" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]]
   }
@@ -164,9 +205,16 @@ vault_env_main() {
 
       val="$(strip_quotes "$val")"
 
+      # export for current shell (this step)
       export "$key=$val"
-      LOADED_KEYS["$key"]=1
+
+      # persist for next steps (GitHub Actions)
+      gh_env_set "$key" "$val"
+
+      # mask secrets in logs (GitHub Actions)
       [[ -n "$val" ]] && gh_mask "$val"
+
+      LOADED_KEYS["$key"]=1
     done < "$f"
 
     loaded=$((loaded+1))
@@ -179,7 +227,7 @@ vault_env_main() {
     log "🧹 Cleaning temporary env files in ${TMPDIR}…"
     local p
     for p in ${ENV_CLEAN_GLOBS}; do
-      # sólo mostramos nombres, nunca contenidos
+      # only show file names, never contents
       find "${TMPDIR}" -maxdepth 1 -type f -name "${p}" -print -exec rm -f {} \; 2>/dev/null | sed 's/^/   removed: /' >&2 || true
     done
   else
@@ -187,7 +235,8 @@ vault_env_main() {
   fi
 
   # ---------- Post-mask ----------
-  if [[ "${GITHUB_ACTIONS:-}" == "true" && ${#LOADED_KEYS[@]} -gt 0 ]]; then
+  if is_github_actions && ${#LOADED_KEYS[@]} -gt 0; then
+    local k v
     for k in "${!LOADED_KEYS[@]}"; do
       v="${!k-}"
       [[ -n "$v" ]] && gh_mask "$v"
@@ -196,7 +245,8 @@ vault_env_main() {
 
   log "✅ Done. Variables loaded into current shell."
   export VAULT_ENV_STATUS="ok"
+  gh_env_set "VAULT_ENV_STATUS" "ok"
   return 0
 }
 
-vault_env_main || { export VAULT_ENV_STATUS="error"; return $?; }
+vault_env_main || { export VAULT_ENV_STATUS="error"; [[ -n "${GITHUB_ENV:-}" ]] && echo "VAULT_ENV_STATUS=error" >> "$GITHUB_ENV"; return $?; }
