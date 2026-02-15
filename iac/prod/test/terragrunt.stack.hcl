@@ -2,7 +2,7 @@ locals {
   global         = read_terragrunt_config(find_in_parent_folders("env.hcl"))
   repository_url = local.global.locals.common.repository_url
   version        = "main"
-  topics         = ["iac", "githubs"]
+  topics         = ["iac", "githubsss"]
   base_repos_topics = concat(
     local.topics,
     ["base"]
@@ -11,7 +11,7 @@ locals {
 
 unit "repo-github-actions" {
   source = "${local.repository_url}//units/github-repository?ref=${local.version}"
-  path   = "repo-github-actions"
+  path   = "repo-github-actionss"
   values = {
     name        = "github-actions"
     description = "Repository to store GitHub Actions & reusable workflows"
@@ -21,7 +21,7 @@ unit "repo-github-actions" {
 
 unit "repo-infrastructure-catalog" {
   source = "${local.repository_url}//units/github-repository?ref=${local.version}"
-  path   = "repo-infrastructure-catalog"
+  path   = "repo-infrastructure-catalogs"
   values = {
     name        = "infrastructure-catalog"
     description = "Infrastructure Catalog which contains reusable Terraform & Terragrunt code"
@@ -31,7 +31,7 @@ unit "repo-infrastructure-catalog" {
 
 unit "repo-packer-images" {
   source = "github.com/proxmox-home-lab/infrastructure-catalog.git//units/github-repository?ref=${local.version}"
-  path   = "repo-packer-images"
+  path   = "repo-packer-imagess"
   values = {
     name        = "packer-images"
     description = "Packer Images for proxmox VM"
@@ -41,7 +41,7 @@ unit "repo-packer-images" {
 
 unit "teams-apply-approvers" {
   source = "github.com/proxmox-home-lab/infrastructure-catalog.git//units/github-teams?ref=${local.version}"
-  path   = "teams-apply-approvers"
+  path   = "teams-apply-approverss"
   values = {
     name        = "apply-approvers"
     description = "GitHub Org Teams for Apply Approvers"
