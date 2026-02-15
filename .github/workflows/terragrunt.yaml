@@ -10,10 +10,6 @@ on:
     paths:
       - "iac/**"
 
-permissions:
-  contents: read
-  pull-requests: write
-
 jobs:
   plan:
     if: ${{ github.event_name == 'pull_request' }}
