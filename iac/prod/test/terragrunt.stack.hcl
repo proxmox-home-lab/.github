@@ -2,7 +2,7 @@ locals {
   global         = read_terragrunt_config(find_in_parent_folders("env.hcl"))
   repository_url = local.global.locals.common.repository_url
   version        = "main"
-  topics         = ["iac", "githubsss"]
+  topics         = ["iac", "githubssss"]
   base_repos_topics = concat(
     local.topics,
     ["base"]
