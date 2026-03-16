@@ -48,10 +48,9 @@ unit "repo-packer-images" {
   }
 }
 
-unit "teams-iac-approvers" {
-  # path is a stable state key — keep it unchanged even when renaming the team.
+unit "teams-platform" {
   source = "github.com/proxmox-home-lab/infrastructure-catalog.git//units/github-team?ref=${local.version}"
-  path   = "teams-iac-approvers"
+  path   = "teams-platform"
   values = {
     name        = "platform"
     description = "Platform team with permission to approve IaC deployments"
