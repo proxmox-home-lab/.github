@@ -8,7 +8,7 @@ locals {
 }
 
 unit "repo-github-actions" {
-  source = "github.com/proxmox-home-lab/infrastructure-catalog.git//units/github/repository?ref=${local.version}"
+  source = "github.com/proxmox-home-lab/infrastructure-catalog.git//units/github-repository?ref=${local.version}"
   path   = "repo-github-actions"
   values = {
     name        = "github-actions"
@@ -18,7 +18,7 @@ unit "repo-github-actions" {
 }
 
 unit "repo-infrastructure-catalog" {
-  source = "github.com/proxmox-home-lab/infrastructure-catalog.git//units/github/repository?ref=${local.version}"
+  source = "github.com/proxmox-home-lab/infrastructure-catalog.git//units/github-repository?ref=${local.version}"
   path   = "repo-infrastructure-catalog"
   values = {
     name        = "infrastructure-catalog"
@@ -28,7 +28,7 @@ unit "repo-infrastructure-catalog" {
 }
 
 unit "repo-packer-images" {
-  source = "github.com/proxmox-home-lab/infrastructure-catalog.git//units/github/repository?ref=${local.version}"
+  source = "github.com/proxmox-home-lab/infrastructure-catalog.git//units/github-repository?ref=${local.version}"
   path   = "repo-packer-images"
   values = {
     name        = "packer-images"
@@ -37,12 +37,12 @@ unit "repo-packer-images" {
   }
 }
 
-unit "teams-apply-approvers" {
-  source = "github.com/proxmox-home-lab/infrastructure-catalog.git//units/github/teams?ref=${local.version}"
-  path   = "teams-apply-approvers"
+unit "teams-iac-approvers" {
+  source = "github.com/proxmox-home-lab/infrastructure-catalog.git//units/github-team?ref=${local.version}"
+  path   = "teams-iac-approvers"
   values = {
-    name        = "apply-approvers"
-    description = "GitHub Org Teams for Apply Approvers"
+    name        = "iac-approvers"
+    description = "GitHub Org team with permission to approve IaC deployments"
     members = {
       sergioaten = "maintainer"
     }
