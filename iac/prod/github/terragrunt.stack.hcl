@@ -7,6 +7,54 @@ locals {
   )
 }
 
+unit "repo-github-org" {
+  source = "github.com/proxmox-home-lab/infrastructure-catalog.git//units/github-repository?ref=${local.version}"
+  path   = "repo-github-org"
+  values = {
+    name        = ".github"
+    description = "GitHub organization defaults and IaC for proxmox-home-lab"
+    auto_init   = false
+    has_issues  = false
+    topics      = local.topics
+    import_id   = ".github"
+    rulesets = {
+      default_branch_protection = {
+        name          = "default-branch-protection"
+        target        = "branch"
+        enforcement   = "active"
+        bypass_actors = []
+        conditions = {
+          ref_name = {
+            include = ["~DEFAULT_BRANCH"]
+            exclude = []
+          }
+        }
+        rules = {
+          deletion         = true
+          non_fast_forward = true
+          pull_request = {
+            dismiss_stale_reviews_on_push     = true
+            require_code_owner_review         = true
+            require_last_push_approval        = false
+            required_approving_review_count   = 1
+            required_review_thread_resolution = false
+          }
+          required_status_checks = {
+            required_check = [
+              { context = "plan / plan", integration_id = null },
+            ]
+            strict_required_status_checks_policy = false
+            do_not_enforce_on_create             = false
+          }
+        }
+      }
+    }
+    codeowners = [
+      "* @proxmox-home-lab/platform",
+    ]
+  }
+}
+
 unit "repo-github-actions" {
   source = "github.com/proxmox-home-lab/infrastructure-catalog.git//units/github-repository?ref=${local.version}"
   path   = "repo-github-actions"
@@ -14,8 +62,6 @@ unit "repo-github-actions" {
     name        = "github-actions"
     description = "Repository to store GitHub Actions & reusable workflows"
     topics      = local.base_repos_topics
-    # All content is CI/CD — platform team owns everything.
-    # /.github/ is already covered by the unit default.
     codeowners = [
       "* @proxmox-home-lab/platform",
     ]
