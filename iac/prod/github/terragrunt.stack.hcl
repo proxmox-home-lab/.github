@@ -37,12 +37,12 @@ unit "repo-packer-images" {
   }
 }
 
-unit "teams-apply-approvers" {
-  source = "github.com/proxmox-home-lab/infrastructure-catalog.git//units/github/teams?ref=${local.version}"
-  path   = "teams-apply-approvers"
+unit "teams-iac-approvers" {
+  source = "github.com/proxmox-home-lab/infrastructure-catalog.git//units/github-teams?ref=${local.version}"
+  path   = "teams-iac-approvers"
   values = {
-    name        = "apply-approvers"
-    description = "GitHub Org Teams for Apply Approvers"
+    name        = "iac-approvers"
+    description = "GitHub Org team with permission to approve IaC deployments"
     members = {
       sergioaten = "maintainer"
     }
