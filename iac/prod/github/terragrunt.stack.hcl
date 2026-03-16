@@ -31,8 +31,6 @@ unit "repo-infrastructure-catalog" {
     topics      = local.base_repos_topics
     codeowners = [
       "* @proxmox-home-lab/platform",
-      "/modules/ @proxmox-home-lab/platform",
-      "/units/   @proxmox-home-lab/platform",
     ]
   }
 }

@@ -1,12 +1,3 @@
 # Default: platform team reviews all changes
-* @proxmox-home-lab/platform
 
-# IaC infrastructure definitions
-/iac/ @proxmox-home-lab/platform
-
-# CI/CD workflow definitions
-/.github/workflows/ @proxmox-home-lab/platform
-
-# Vault & provider config
-/vault-helper.sh @proxmox-home-lab/platform
-/vault-agent.hcl @proxmox-home-lab/platform
+- @proxmox-home-lab/platform
