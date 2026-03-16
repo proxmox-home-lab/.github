@@ -1,10 +1,57 @@
 locals {
   version = "main"
-  topics  = ["iac", "github", "proxmox"]
+  topics  = ["iac", "github"]
   base_repos_topics = concat(
     local.topics,
     ["base"]
   )
+}
+
+unit "repo-github-org" {
+  source = "github.com/proxmox-home-lab/infrastructure-catalog.git//units/github-repository?ref=${local.version}"
+  path   = "repo-github-org"
+  values = {
+    name        = ".github"
+    description = "GitHub organization defaults and IaC for proxmox-home-lab"
+    auto_init   = false
+    topics      = local.topics
+    import_id   = ".github"
+    rulesets = {
+      default_branch_protection = {
+        name          = "default-branch-protection"
+        target        = "branch"
+        enforcement   = "active"
+        bypass_actors = []
+        conditions = {
+          ref_name = {
+            include = ["~DEFAULT_BRANCH"]
+            exclude = []
+          }
+        }
+        rules = {
+          deletion         = true
+          non_fast_forward = true
+          pull_request = {
+            dismiss_stale_reviews_on_push     = true
+            require_code_owner_review         = true
+            require_last_push_approval        = false
+            required_approving_review_count   = 1
+            required_review_thread_resolution = false
+          }
+          required_status_checks = {
+            required_check = [
+              { context = "plan / plan", integration_id = null },
+            ]
+            strict_required_status_checks_policy = false
+            do_not_enforce_on_create             = false
+          }
+        }
+      }
+    }
+    codeowners = [
+      "* @proxmox-home-lab/platform",
+    ]
+  }
 }
 
 unit "repo-github-actions" {
@@ -14,6 +61,9 @@ unit "repo-github-actions" {
     name        = "github-actions"
     description = "Repository to store GitHub Actions & reusable workflows"
     topics      = local.base_repos_topics
+    codeowners = [
+      "* @proxmox-home-lab/platform",
+    ]
   }
 }
 
@@ -24,6 +74,9 @@ unit "repo-infrastructure-catalog" {
     name        = "infrastructure-catalog"
     description = "Infrastructure Catalog which contains reusable Terraform & Terragrunt code"
     topics      = local.base_repos_topics
+    codeowners = [
+      "* @proxmox-home-lab/platform",
+    ]
   }
 }
 
@@ -34,15 +87,18 @@ unit "repo-packer-images" {
     name        = "packer-images"
     description = "Packer Images for proxmox VM"
     topics      = local.base_repos_topics
+    codeowners = [
+      "* @proxmox-home-lab/platform",
+    ]
   }
 }
 
-unit "teams-iac-approvers" {
+unit "teams-platform" {
   source = "github.com/proxmox-home-lab/infrastructure-catalog.git//units/github-team?ref=${local.version}"
-  path   = "teams-iac-approvers"
+  path   = "teams-platform"
   values = {
-    name        = "iac-approvers"
-    description = "GitHub Org team with permission to approve IaC deployments"
+    name        = "platform"
+    description = "Platform team with permission to approve IaC deployments"
     members = {
       sergioaten = "maintainer"
     }
