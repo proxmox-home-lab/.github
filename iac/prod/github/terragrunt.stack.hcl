@@ -1,6 +1,6 @@
 locals {
   version = "main"
-  topics  = ["iac", "github"]
+  topics  = ["iac", "github", "proxmox"]
   base_repos_topics = concat(
     local.topics,
     ["base"]
