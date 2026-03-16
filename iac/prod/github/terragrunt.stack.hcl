@@ -85,7 +85,7 @@ unit "repo-packer-images" {
   path   = "repo-packer-images"
   values = {
     name        = "packer-images"
-    description = "Packer Images for proxmox VM"
+    description = "Packer images for Proxmox VMs"
     topics      = local.base_repos_topics
     codeowners = [
       "* @proxmox-home-lab/platform",
