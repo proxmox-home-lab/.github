@@ -14,7 +14,6 @@ unit "repo-github-org" {
     name        = ".github"
     description = "GitHub organization defaults and IaC for proxmox-home-lab"
     auto_init   = false
-    has_issues  = false
     topics      = local.topics
     import_id   = ".github"
     rulesets = {
