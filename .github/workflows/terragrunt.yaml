@@ -13,12 +13,18 @@ on:
       - "iac/**"
 
 jobs:
+  # working_dir is the root containing stack subdirectories.
+  # The template auto-detects all terragrunt.stack.hcl files under this path
+  # and runs plan/apply only for stacks with changed files.
+  # To add new stacks, create a new directory under iac/prod/ with a
+  # terragrunt.stack.hcl — no changes to this workflow are needed.
   plan:
     if: ${{ github.event_name == 'pull_request' }}
     uses: proxmox-home-lab/github-actions/.github/workflows/tpl-terragrunt.yaml@main
     secrets: inherit
     with:
       action: plan
+      working_dir: iac/prod
 
   apply:
     if: ${{ github.event_name == 'push' }}
@@ -26,3 +32,4 @@ jobs:
     secrets: inherit
     with:
       action: apply
+      working_dir: iac/prod
