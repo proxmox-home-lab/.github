@@ -93,6 +93,19 @@ unit "repo-packer-images" {
   }
 }
 
+unit "repo-infrastructure-core" {
+  source = "github.com/proxmox-home-lab/infrastructure-catalog.git//units/github-repository?ref=${local.version}"
+  path   = "repo-infrastructure-core"
+  values = {
+    name        = "infrastructure-core"
+    description = "Environment IaC for the Proxmox home lab — consumes stacks from infrastructure-catalog"
+    topics      = concat(local.base_repos_topics, ["proxmox"])
+    codeowners = [
+      "* @proxmox-home-lab/platform",
+    ]
+  }
+}
+
 unit "teams-platform" {
   source = "github.com/proxmox-home-lab/infrastructure-catalog.git//units/github-team?ref=${local.version}"
   path   = "teams-platform"
