@@ -10,14 +10,14 @@ locals {
 
   default_bypass_actors = [
     {
-      actor_type  = "Integration"
-      actor_id    = local.github_app_installation_id
+      actor_type  = "OrganizationAdmin"
+      actor_id    = "0"
       bypass_mode = "always"
     },
     {
-      actor_type  = "OrganizationAdmin"
-      actor_id    = "0"
-      bypass_mode = "pull_request"
+      actor_type  = "Integration"
+      actor_id    = local.github_app_installation_id
+      bypass_mode = "always"
     },
   ]
 }
