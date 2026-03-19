@@ -113,7 +113,7 @@ unit "repo-infrastructure-core" {
   path   = "repo-infrastructure-core"
   values = {
     name        = "infrastructure-core"
-    description = "Infrastructure IaC for the Proxmox home lab — consumes stacks from the infrastructure catalog"
+    description = "Infrastructure IaC for the Proxmox home lab — consumes modules from the infrastructure catalog"
     topics      = concat(local.base_repos_topics, ["proxmox"])
     codeowners = [
       "* @proxmox-home-lab/platform",
