@@ -6,7 +6,7 @@ locals {
     ["base"]
   )
 
-  github_app_installation_id = get_env("GITHUB_APP_INSTALLATION_ID", "0")
+  github_app_installation_id = get_env("GITHUB_APP_ID", "0")
 
   default_bypass_actors = [
     {
