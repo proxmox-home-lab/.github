@@ -6,7 +6,7 @@ locals {
     ["base"]
   )
 
-  github_app_installation_id = get_env("GITHUB_APP_ID", "0")
+  github_app_id = get_env("GITHUB_APP_ID", "0")
 
   default_bypass_actors = [
     {
@@ -16,7 +16,7 @@ locals {
     },
     {
       actor_type  = "Integration"
-      actor_id    = local.github_app_installation_id
+      actor_id    = local.github_app_id
       bypass_mode = "always"
     },
   ]
