@@ -5,6 +5,21 @@ locals {
     local.topics,
     ["base"]
   )
+
+  github_app_installation_id = get_env("GITHUB_APP_INSTALLATION_ID", "0")
+
+  default_bypass_actors = [
+    {
+      actor_type  = "Integration"
+      actor_id    = local.github_app_installation_id
+      bypass_mode = "always"
+    },
+    {
+      actor_type  = "OrganizationAdmin"
+      actor_id    = "0"
+      bypass_mode = "pull_request"
+    },
+  ]
 }
 
 unit "repo-github-org" {
@@ -21,7 +36,7 @@ unit "repo-github-org" {
         name          = "default-branch-protection"
         target        = "branch"
         enforcement   = "active"
-        bypass_actors = []
+        bypass_actors = local.default_bypass_actors
         conditions = {
           ref_name = {
             include = ["~DEFAULT_BRANCH"]
@@ -40,7 +55,7 @@ unit "repo-github-org" {
           }
           required_status_checks = {
             required_check = [
-              { context = "plan / plan", integration_id = null },
+              { context = "plan / plan-gate", integration_id = null },
             ]
             strict_required_status_checks_policy = false
             do_not_enforce_on_create             = false
