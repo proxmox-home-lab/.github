@@ -1,5 +1,5 @@
 locals {
-  version = "main" # refresh
+  version = "main"
   topics  = ["iac", "github"]
   base_repos_topics = concat(
     local.topics,
