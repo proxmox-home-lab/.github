@@ -55,7 +55,7 @@ unit "repo-github-org" {
           }
           required_status_checks = {
             required_check = [
-              { context = "plan / plan", integration_id = null },
+              { context = "plan / plan-gate", integration_id = null },
             ]
             strict_required_status_checks_policy = false
             do_not_enforce_on_create             = false
