@@ -1,3 +1,2 @@
-# Default: platform team reviews all changes
-
-- @proxmox-home-lab/platform
+/.github/ @proxmox-home-lab/platform
+* @proxmox-home-lab/platform
